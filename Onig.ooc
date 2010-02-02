@@ -87,7 +87,26 @@ Oniguruma: cover {
     newRegexp: static extern(onig_new) func (Regexp*, Pointer, Pointer, Option, Encoding, Syntax, ErrorInfo*) -> Int
 }
 
-Region: cover from OnigRegion
+RegionStruct: cover from OnigRegion {
+    allocated, num_regs: extern Int
+    beg, end: extern Int*
+}
+
+Region: cover from RegionStruct* {
+    new: static extern(onig_region_new) func -> This
+    free: extern(onig_region_free) func (freeSelf: Int)
+    copyFrom: extern(onig_region_copy) func (from_: This)
+    clear: extern(onig_region_clear) func
+    resize: extern(onig_region_resize) func (n: Int) -> Int
+    
+    beginning: func -> Int {
+        this@ beg@
+    }
+    
+    ending: func -> Int {
+        this@ end@
+    }
+}
 
 Regexp: cover from OnigRegex {
     /*
@@ -111,25 +130,52 @@ Regexp: cover from OnigRegex {
     }
     
     new: static func ~simple (pattern: String) -> This {
-        This new(pattern, Option DEFAULT, Encoding ASCII, Syntax RUBY, null)
+        This new(pattern, Option DEFAULT, Encoding ASCII, Syntax DEFAULT, null)
     }
     
     free: extern(onig_free) func
-    search: extern(onig_search) func (str, end, start, range: UChar*, region: Region*, option: Option) -> Int
-    matches: extern(onig_match) func (str, end, at: UChar*, region: Region*, option: Option) -> Int
-    matches: func ~simple (str: String) -> Int {
-        p := str as UChar*
-        this matches(p, p + str length(), p, null, Option NONE)
+    
+    search: extern(onig_search) func (str, end, start, range: UChar*, region: Region, option: Option) -> Int
+    
+    search: func ~simple (str: String) -> Int {
+        this search(str, null)
     }
+    
+    search: func ~simpleWithRegion (str: String, r: Region) -> Int {
+        p := str as UChar*
+        this search(p, p + str length(), p, p + str length(), r, Option NONE)
+    }
+    
+    matches: extern(onig_match) func (str, end, at: UChar*, region: Region, option: Option) -> Int
+    
+    matches: func ~simple (str: String) -> Int {
+        matches(str, null)
+    }
+    
+    matches: func ~simpleWithRegion (str: String, r: Region) -> Int {
+        p := str as UChar*
+        this matches(p, p + str length(), p, r, Option NONE)
+    }
+    
+    nameToGroupNumbers: extern(onig_name_to_group_numbers) func (name, name_end: UChar*, num_list: Int*) -> Int
+    nameToBackrefNumber: extern(onig_name_to_backref_number) func (name, name_end: UChar*, region: Region) -> Int
+    foreachName: extern(onig_foreach_name) func (fn: Func, arg: Pointer) -> Int
+    numberOfNames: extern(onig_number_of_names) func -> Int
+    numberOfCaptures: extern(onig_number_of_captures) func -> Int
+    numberOfCaptureHistories: extern(onig_number_of_capture_histories) func -> Int
 }
 
 
 main: func {
-    r := Regexp new("^hello, (\\w+)$")
+    s := "hello, woop"
+    r := Regexp new("\\w[oO]{1,}p$")
+    g := Region new()
     
     if (r != null) {
         "ok" println()
-        r matches("hello, woop") as String println()
+        if (r search(s, g) > -1) {
+            s substring(g beginning(), g ending()) println()
+        }
     } else
         "no go" println()
     
