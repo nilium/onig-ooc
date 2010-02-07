@@ -61,7 +61,8 @@ Option: cover from UInt {
     MAXBIT: static extern(ONIG_OPTION_MAXBIT) const This
 }
 
-Syntax: cover from OnigSyntaxType* {
+SyntaxType: cover from OnigSyntaxType
+Syntax: cover from SyntaxType* {
     ASIS: static extern(ONIG_SYNTAX_ASIS) const This
     POSIX_BASIC: static extern(ONIG_SYNTAX_POSIX_BASIC) const This
     POSIX_EXTENDED: static extern(ONIG_SYNTAX_POSIX_EXTENDED) const This
@@ -73,6 +74,102 @@ Syntax: cover from OnigSyntaxType* {
     PERL_NG: static extern(ONIG_SYNTAX_PERL_NG) const This
     RUBY: static extern(ONIG_SYNTAX_RUBY) const This
     DEFAULT: static extern(ONIG_SYNTAX_DEFAULT) const This
+    
+    new: static func -> This {
+        gc_malloc(sizeof(SyntaxType)) as This
+    }
+    
+    copyFrom: extern(onig_copy_syntax) func (from_: This)
+    copy: func -> This {
+        sn := This new()
+        sn copyFrom(this)
+        return sn
+    }
+    
+    getOptions: extern(onig_get_syntax_options) func -> Option
+    getOp: extern(onig_get_syntax_op) func -> UInt
+    getOp2: extern(onig_get_syntax_op2) func -> UInt
+    getBehavior: extern(onig_get_syntax_behavior) func -> Int
+    setOptions: extern(onig_set_syntax_options) func (options: Option)
+    setOp: extern(onig_set_syntax_op) func (op: UInt)
+    setOp2: extern(onig_set_syntax_op2) func (op2: UInt)
+    setBehavior: extern(onig_set_syntax_behavior) func (behavior: UInt)
+    
+    newRegexp: func(pattern: String) -> Regexp {
+        Regexp new(pattern, Option DEFAULT, Encoding ASCII, this, null)
+    }
+    
+    OP_VARIABLE_META_CHARACTERS: extern(ONIG_SYN_OP_VARIABLE_META_CHARACTERS) static const Int
+    OP_DOT_ANYCHAR: extern(ONIG_SYN_OP_DOT_ANYCHAR) static const Int
+    OP_ASTERISK_ZERO_INF: extern(ONIG_SYN_OP_ASTERISK_ZERO_INF) static const Int
+    OP_ESC_ASTERISK_ZERO_INF: extern(ONIG_SYN_OP_ESC_ASTERISK_ZERO_INF) static const Int
+    OP_PLUS_ONE_INF: extern(ONIG_SYN_OP_PLUS_ONE_INF) static const Int
+    OP_ESC_PLUS_ONE_INF: extern(ONIG_SYN_OP_ESC_PLUS_ONE_INF) static const Int
+    OP_QMARK_ZERO_ONE: extern(ONIG_SYN_OP_QMARK_ZERO_ONE) static const Int
+    OP_ESC_QMARK_ZERO_ONE: extern(ONIG_SYN_OP_ESC_QMARK_ZERO_ONE) static const Int
+    OP_BRACE_INTERVAL: extern(ONIG_SYN_OP_BRACE_INTERVAL) static const Int
+    OP_ESC_BRACE_INTERVAL: extern(ONIG_SYN_OP_ESC_BRACE_INTERVAL) static const Int
+    OP_VBAR_ALT: extern(ONIG_SYN_OP_VBAR_ALT) static const Int
+    OP_ESC_VBAR_ALT: extern(ONIG_SYN_OP_ESC_VBAR_ALT) static const Int
+    OP_LPAREN_SUBEXP: extern(ONIG_SYN_OP_LPAREN_SUBEXP) static const Int
+    OP_ESC_LPAREN_SUBEXP: extern(ONIG_SYN_OP_ESC_LPAREN_SUBEXP) static const Int
+    OP_ESC_AZ_BUF_ANCHOR: extern(ONIG_SYN_OP_ESC_AZ_BUF_ANCHOR) static const Int
+    OP_ESC_CAPITAL_G_BEGIN_ANCHOR: extern(ONIG_SYN_OP_ESC_CAPITAL_G_BEGIN_ANCHOR) static const Int
+    OP_DECIMAL_BACKREF: extern(ONIG_SYN_OP_DECIMAL_BACKREF) static const Int
+    OP_BRACKET_CC: extern(ONIG_SYN_OP_BRACKET_CC) static const Int
+    OP_ESC_W_WORD: extern(ONIG_SYN_OP_ESC_W_WORD) static const Int
+    OP_ESC_LTGT_WORD_BEGIN_END: extern(ONIG_SYN_OP_ESC_LTGT_WORD_BEGIN_END) static const Int
+    OP_ESC_B_WORD_BOUND: extern(ONIG_SYN_OP_ESC_B_WORD_BOUND) static const Int
+    OP_ESC_S_WHITE_SPACE: extern(ONIG_SYN_OP_ESC_S_WHITE_SPACE) static const Int
+    OP_ESC_D_DIGIT: extern(ONIG_SYN_OP_ESC_D_DIGIT) static const Int
+    OP_LINE_ANCHOR: extern(ONIG_SYN_OP_LINE_ANCHOR) static const Int
+    OP_POSIX_BRACKET: extern(ONIG_SYN_OP_POSIX_BRACKET) static const Int
+    OP_QMARK_NON_GREEDY: extern(ONIG_SYN_OP_QMARK_NON_GREEDY) static const Int
+    OP_ESC_CONTROL_CHARS: extern(ONIG_SYN_OP_ESC_CONTROL_CHARS) static const Int
+    OP_ESC_C_CONTROL: extern(ONIG_SYN_OP_ESC_C_CONTROL) static const Int
+    OP_ESC_OCTAL3: extern(ONIG_SYN_OP_ESC_OCTAL3) static const Int
+    OP_ESC_X_HEX2: extern(ONIG_SYN_OP_ESC_X_HEX2) static const Int
+    OP_ESC_X_BRACE_HEX8: extern(ONIG_SYN_OP_ESC_X_BRACE_HEX8) static const Int
+
+    OP2_ESC_CAPITAL_Q_QUOTE: extern(ONIG_SYN_OP2_ESC_CAPITAL_Q_QUOTE) static const Int
+    OP2_QMARK_GROUP_EFFECT: extern(ONIG_SYN_OP2_QMARK_GROUP_EFFECT) static const Int
+    OP2_OPTION_PERL: extern(ONIG_SYN_OP2_OPTION_PERL) static const Int
+    OP2_OPTION_RUBY: extern(ONIG_SYN_OP2_OPTION_RUBY) static const Int
+    OP2_PLUS_POSSESSIVE_REPEAT: extern(ONIG_SYN_OP2_PLUS_POSSESSIVE_REPEAT) static const Int
+    OP2_PLUS_POSSESSIVE_INTERVAL: extern(ONIG_SYN_OP2_PLUS_POSSESSIVE_INTERVAL) static const Int
+    OP2_CCLASS_SET_OP: extern(ONIG_SYN_OP2_CCLASS_SET_OP) static const Int
+    OP2_QMARK_LT_NAMED_GROUP: extern(ONIG_SYN_OP2_QMARK_LT_NAMED_GROUP) static const Int
+    OP2_ESC_K_NAMED_BACKREF: extern(ONIG_SYN_OP2_ESC_K_NAMED_BACKREF) static const Int
+    OP2_ESC_G_SUBEXP_CALL: extern(ONIG_SYN_OP2_ESC_G_SUBEXP_CALL) static const Int
+    OP2_ATMARK_CAPTURE_HISTORY: extern(ONIG_SYN_OP2_ATMARK_CAPTURE_HISTORY) static const Int
+    OP2_ESC_CAPITAL_C_BAR_CONTROL: extern(ONIG_SYN_OP2_ESC_CAPITAL_C_BAR_CONTROL) static const Int
+    OP2_ESC_CAPITAL_M_BAR_META: extern(ONIG_SYN_OP2_ESC_CAPITAL_M_BAR_META) static const Int
+    OP2_ESC_V_VTAB: extern(ONIG_SYN_OP2_ESC_V_VTAB) static const Int
+    OP2_ESC_U_HEX4: extern(ONIG_SYN_OP2_ESC_U_HEX4) static const Int
+    OP2_ESC_GNU_BUF_ANCHOR: extern(ONIG_SYN_OP2_ESC_GNU_BUF_ANCHOR) static const Int
+    OP2_ESC_P_BRACE_CHAR_PROPERTY: extern(ONIG_SYN_OP2_ESC_P_BRACE_CHAR_PROPERTY) static const Int
+    OP2_ESC_P_BRACE_CIRCUMFLEX_NOT: extern(ONIG_SYN_OP2_ESC_P_BRACE_CIRCUMFLEX_NOT) static const Int
+    OP2_ESC_H_XDIGIT: extern(ONIG_SYN_OP2_ESC_H_XDIGIT) static const Int
+    OP2_INEFFECTIVE_ESCAPE: extern(ONIG_SYN_OP2_INEFFECTIVE_ESCAPE) static const Int
+
+    CONTEXT_INDEP_ANCHORS: extern(ONIG_SYN_CONTEXT_INDEP_ANCHORS) static const Int
+    CONTEXT_INDEP_REPEAT_OPS: extern(ONIG_SYN_CONTEXT_INDEP_REPEAT_OPS) static const Int
+    CONTEXT_INVALID_REPEAT_OPS: extern(ONIG_SYN_CONTEXT_INVALID_REPEAT_OPS) static const Int
+    ALLOW_UNMATCHED_CLOSE_SUBEXP: extern(ONIG_SYN_ALLOW_UNMATCHED_CLOSE_SUBEXP) static const Int
+    ALLOW_INVALID_INTERVAL: extern(ONIG_SYN_ALLOW_INVALID_INTERVAL) static const Int
+    ALLOW_INTERVAL_LOW_ABBREV: extern(ONIG_SYN_ALLOW_INTERVAL_LOW_ABBREV) static const Int
+    STRICT_CHECK_BACKREF: extern(ONIG_SYN_STRICT_CHECK_BACKREF) static const Int
+    DIFFERENT_LEN_ALT_LOOK_BEHIND: extern(ONIG_SYN_DIFFERENT_LEN_ALT_LOOK_BEHIND) static const Int
+    CAPTURE_ONLY_NAMED_GROUP: extern(ONIG_SYN_CAPTURE_ONLY_NAMED_GROUP) static const Int
+    ALLOW_MULTIPLEX_DEFINITION_NAME: extern(ONIG_SYN_ALLOW_MULTIPLEX_DEFINITION_NAME) static const Int
+    FIXED_INTERVAL_IS_GREEDY_ONLY: extern(ONIG_SYN_FIXED_INTERVAL_IS_GREEDY_ONLY) static const Int
+
+    NOT_NEWLINE_IN_NEGATIVE_CC: extern(ONIG_SYN_NOT_NEWLINE_IN_NEGATIVE_CC) static const Int
+    BACKSLASH_ESCAPE_IN_CC: extern(ONIG_SYN_BACKSLASH_ESCAPE_IN_CC) static const Int
+    ALLOW_EMPTY_RANGE_IN_CC: extern(ONIG_SYN_ALLOW_EMPTY_RANGE_IN_CC) static const Int
+    ALLOW_DOUBLE_RANGE_OP_IN_CC: extern(ONIG_SYN_ALLOW_DOUBLE_RANGE_OP_IN_CC) static const Int
+    WARN_CC_OP_NOT_ESCAPED: extern(ONIG_SYN_WARN_CC_OP_NOT_ESCAPED) static const Int
+    WARN_REDUNDANT_NESTED_REPEAT: extern(ONIG_SYN_WARN_REDUNDANT_NESTED_REPEAT) static const Int
 }
 
 ErrorInfo: cover from OnigErrorInfo {
