@@ -1,0 +1,6 @@
+Name: Oniguruma
+Description: Oniguruma regular expression library
+Requires: 
+Version: 5.9.2
+Libs: -lonig
+SourcePath: .
