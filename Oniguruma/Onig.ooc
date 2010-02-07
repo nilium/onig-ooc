@@ -215,15 +215,6 @@ Region: cover from RegionStruct* {
 }
 
 Regexp: cover from OnigRegex {
-    /*
-    p: extern UChar*
-    used, alloc: extern UInt
-    state, num_mem, num_repeat, num_null_check, num_comb_exp_check, num_call: extern Int
-    capture_history, bt_mem_start, bt_mem_end: extern UInt
-    stack_pop_level, repeat_range_alloc: extern Int
-    repeat_range: extern Pointer
-    // ...
-    */
     
     new: static func (pattern: String, option: Option, encoding: Encoding, syntax: Syntax, info: ErrorInfo*) -> This {
         p := pattern as UChar*
