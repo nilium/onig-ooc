@@ -163,21 +163,5 @@ Regexp: cover from OnigRegex {
     numberOfNames: extern(onig_number_of_names) func -> Int
     numberOfCaptures: extern(onig_number_of_captures) func -> Int
     numberOfCaptureHistories: extern(onig_number_of_capture_histories) func -> Int
-}
-
-
-main: func {
-    s := "hello, woop"
-    r := Regexp new("\\w[oO]{1,}p$")
-    g := Region new()
-    
-    if (r != null) {
-        "ok" println()
-        if (r search(s, g) > -1) {
-            s substring(g beginning(), g ending()) println()
-        }
-    } else
-        "no go" println()
-    
-    r free()
+    nonameGroupCaptureIsActive: extern(onig_noname_group_capture_is_active) func -> Int
 }
