@@ -37,6 +37,10 @@ Encoding: cover from OnigEncoding {
     CP1251: static extern(ONIG_ENCODING_CP1251) const This
     BIG5: static extern(ONIG_ENCODING_BIG5) const This
     GB18030: static extern(ONIG_ENCODING_GB18030) const This
+    
+    prevCharHead: extern(onigenc_get_prev_char_head) func (start, s: const UChar*) -> UChar*
+    leftAdjustCharHead: extern(onigenc_get_left_adjust_char_head) func (start, s: const UChar*) -> UChar*
+    
 }
 
 Option: cover from UInt {
