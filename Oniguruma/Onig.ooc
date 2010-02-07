@@ -205,13 +205,32 @@ Region: cover from RegionStruct* {
     clear: extern(onig_region_clear) func
     resize: extern(onig_region_resize) func (n: Int) -> Int
     
-    beginning: func -> Int {
-        this@ beg@
+    numRegisters: func -> Int {
+        this@ num_regs
     }
     
-    ending: func -> Int {
-        this@ end@
+    beginning: func ~zero -> Int {
+        beginning(0)
     }
+    
+    ending: func ~zero -> Int {
+        ending(0)
+    }
+    
+    beginning: func (n: Int) -> Int {
+        this@ beg[n]
+    }
+    
+    ending: func (n: Int) -> Int {
+        this@ end[n]
+    }
+    
+    captureTree: extern(onig_get_capture_tree) func -> CaptureTreeNode
+    traverseCaptureTree: extern(onig_capture_tree_traverse) func (at: Int, fn: Func, args: Pointer) -> Int
+
+    TRAVERSE_CALLBACK_AT_FIRST: extern(ONIG_TRAVERSE_CALLBACK_AT_FIRST) static const Int
+    TRAVERSE_CALLBACK_AT_LAST: extern(ONIG_TRAVERSE_CALLBACK_AT_LAST) static const Int
+    TRAVERSE_CALLBACK_AT_BOTH: extern(ONIG_TRAVERSE_CALLBACK_AT_BOTH) static const Int
 }
 
 Regexp: cover from OnigRegex {
