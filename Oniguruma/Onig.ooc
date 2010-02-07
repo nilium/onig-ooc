@@ -1,6 +1,11 @@
 include oniguruma
 use oniguruma
 
+CaptureTreeNode: cover from OnigCaptureTreeNode {
+    group, beg, end, allocated, num_childs: extern Int
+    children: extern(childs) This[]
+}
+
 Encoding: cover from OnigEncoding {
     ASCII: static extern(ONIG_ENCODING_ASCII) const This
     ISO_8859_1: static extern(ONIG_ENCODING_ISO_8859_1) const This
